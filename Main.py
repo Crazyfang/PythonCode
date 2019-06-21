@@ -9,10 +9,11 @@ from Function import ManageClass
 class ThreadTransfer(QThread):
     signOut = pyqtSignal(str, float)
 
-    def __init__(self, zip_file_path, excel_file_path):
+    def __init__(self, zip_file_path, excel_file_path, type):
         super(ThreadTransfer, self).__init__()
         self.zip_file_path = zip_file_path
         self.excel_file_path = excel_file_path
+        self.type = type
 
     def run(self):
         manage = ManageClass(self.zip_file_path, self.excel_file_path)
@@ -31,9 +32,14 @@ class ThreadTransfer(QThread):
             # proportion = 100/len(list_filename)
 
             for index, filename in enumerate(list_filename):
-                message_img_deal = manage.convert_image(filename)
-                if message_img_deal[0]:
-                    self.signOut.emit('文件转换成功,文件名：{0}'.format(filename), 90)
+                if self.type == 1:
+                    message_img_deal = manage.convert_image(filename)
+                    if message_img_deal[0]:
+                        self.signOut.emit('文件转换成功,文件名：{0}'.format(filename), 90)
+                else:
+                    message_img_deal = manage.convert_image_colours(filename)
+                    if message_img_deal[0]:
+                        self.signOut.emit('文件转换成功,文件名：{0}'.format(filename), 90)
 
             manage.del_temp_file()
             self.signOut.emit('删除临时文件夹', 100)
@@ -58,7 +64,10 @@ class QRCodeTransfer(QMainWindow, Surface.Ui_MainWindow):
         # self.timer = QTimer()
         # self.timer.timeout.connect(self.set_progress_bar)
         # self.timer.start(100)
+        self.radioButton_colours.toggled.connect(self.change_type)
+        self.radioButton_blank.toggled.connect(self.change_type)
         self.step = 0  # 进度条的值
+        self.type = 1
         self.progressBar_Progress.setValue(0)
         self.setWindowIcon(QIcon('./icon.ico'))
         self.Button_SelectZipFile.clicked.connect(self.select_zip_file)
@@ -78,7 +87,10 @@ class QRCodeTransfer(QMainWindow, Surface.Ui_MainWindow):
             QMessageBox.information(self, '提示', '请选择压缩包文件和Excel文件!')
         else:
             pass
-        self.workthread = ThreadTransfer(self.lineEdit_SelectZipFile.text(), self.lineEdit_SelectExcelFile.text())
+        self.workthread = ThreadTransfer(self.lineEdit_SelectZipFile.text(),
+                                         self.lineEdit_SelectExcelFile.text(),
+                                         self.type)
+
         self.workthread.signOut.connect(self.list_add)
         self.Button_Start.setEnabled(False)
         self.Button_Start.setText('正在处理')
@@ -99,6 +111,11 @@ class QRCodeTransfer(QMainWindow, Surface.Ui_MainWindow):
             self.Button_Start.setText('开始处理')
             QMessageBox.information(self, "提示", "程序处理完成")
 
+    def change_type(self):
+        if self.radioButton_blank.isChecked():
+            self.type = 1
+        else:
+            self.type = 2
 
 
 if __name__ == '__main__':

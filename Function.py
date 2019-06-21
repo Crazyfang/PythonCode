@@ -104,7 +104,7 @@ class ManageClass:
                 for index_row in range(2, rowNum + 1):
                     value = []
                     for index_col in range(1, 5):
-                        value.append(booksheet.cell(row=index_row,column=index_col).value)
+                        value.append(booksheet.cell(row=index_row, column=index_col).value)
                     self.excel_value.append(value)
                 self.logger.info('读取Excel文件内容成功!')
 
@@ -191,6 +191,78 @@ class ManageClass:
             self.logger.warning('二维码转换出现错误,文件名:{0}, {1}'.format(os.path.basename(filename), e))
             return [False, e]
 
+    def convert_image_colours(self, filename):
+        try:
+            # 定义背景宽度像素
+            width = 1183
+            # 定义背景高度像素
+            # high = 1676
+            # 定义粘贴后的二维码大小
+            ewmwidth = 580
+            ewmhigh = 580
+            # 二维码粘贴高度定位为580，小牌下移0；大牌下移221
+            # gd = 580
+
+            # 定义字体大小
+            zt = 85
+
+            # 打开底版图片
+            im = Image.open('./template_colours.jpg')
+            # 打开二维码图片
+            imin = Image.open(self.dec_path + filename)
+            # 缩放
+            imin = imin.resize((ewmwidth, ewmhigh))
+            # 粘贴图片
+            im.paste(imin, (310, 780))
+
+            name = ''
+            save_file_name = ''
+            if self.excel_value:
+                card_number = filename.split('_')[2]
+                for item in self.excel_value:
+                    if card_number == item[3]:
+                        name = item[1] if item[1] else item[0]
+                        save_file_name = item[0]
+                        # name = item[0]
+                        break
+
+                if not name:
+                    name = filename.split('_')[0]
+                    save_file_name = filename.split('_')[0]
+                else:
+                    pass
+            else:
+                name = filename.split('_')[0]
+                save_file_name = filename.split('_')[0]
+            length = len(name)
+
+            # 使用自定义的字体，第二个参数表示字符大小
+            font = ImageFont.truetype('./HeiTi.TTF', zt)
+            # 在图片上添加文字
+            draw = ImageDraw.Draw(im)
+
+            # 限制输入16个字符
+            # 限制每行字数为8，即8个字换行
+            hangzishu = 8
+            if length <= hangzishu:  # 字符串很长的情况下
+                an = (width - length * zt) / 2  # 判断字符串到图片左侧的距离
+                draw.text((an, 1426), name, fill=(0, 0, 0), font=font)  # 文字写入
+            elif (length > hangzishu) and (length <= hangzishu * 2):
+                an1 = (width - hangzishu * zt) / 2  # 第一行
+                an2 = (width - (length - hangzishu) * zt) / 2  # 第二行
+                a1, a2 = name[:hangzishu], name[hangzishu:]
+                draw.text((an1, 1434), a1, fill=(0, 0, 0), font=font)
+                draw.text((an2, 1540), a2, fill=(0, 0, 0), font=font)
+            else:
+                # 人为控制字符长度
+                self.logger.info('{0}字符超限'.format(filename))
+
+            im.save(os.path.join(self.target_path, save_file_name + "_彩色图") + ".jpg", 'JPEG')
+            return [True, save_file_name + "_彩色图"]
+        except Exception as e:
+            self.logger.warning('二维码转换出现错误,文件名:{0}, {1}'.format(os.path.basename(filename), e))
+            return [False, e]
+
     def return_list_filename(self):
         return os.listdir(self.dec_path)
 
@@ -204,8 +276,8 @@ class ManageClass:
 
 
 if __name__ == '__main__':
-    manage = ManageClass('C:\\Users\\Administrator\\Desktop\\码牌名称隐藏姓名\\测试.zip',
-                         'C:\\Users\\Administrator\\Desktop\\码牌名称隐藏姓名\\测试-丰收一码通商户信息登记表.xlsx')
+    manage = ManageClass('C:\\Users\\Administrator\\Desktop\\码牌名称隐藏姓名-打印版\\测试.zip',
+                         'C:\\Users\\Administrator\\Desktop\\码牌名称隐藏姓名-打印版\\测试-丰收一码通商户信息登记表.xlsx')
     # manage.get_zip_file()
     # list_filename = manage.return_list_filename()
     #
@@ -219,6 +291,6 @@ if __name__ == '__main__':
     list_filename = manage.return_list_filename()
 
     for filename in list_filename:
-        manage.convert_image(filename)
+        manage.convert_image_colours(filename)
 
     manage.del_temp_file()
