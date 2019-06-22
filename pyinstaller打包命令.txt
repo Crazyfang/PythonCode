@@ -1,0 +1,8 @@
+pyinstaller --paths C:\Users\Administrator\AppData\Local\Programs\Python\Python37-32\Lib\site-packages\PyQt5\Qt\bin -w --icon C:\Users\Administrator\Desktop\PythonCode\icon.ico Main.py
+
+-w 不带命令框
+-F 可执行文件
+--paths 指明pyqt5动态库的位置
+--icon 指定打包程序使用的图标文件
+-D, –onedir 创建一个目录，包含exe文件，但会依赖很多文件（默认选项）
+-c, –console, –nowindowed 使用控制台，无界面(默认)
