@@ -87,9 +87,9 @@ class ManageClass:
 
                 rowNum = booksheet.nrows
 
-                for index_row in range(rowNum):
+                for index_row in range(2, rowNum + 1):
                     value = []
-                    for index_col in range(4):
+                    for index_col in range(1, 5):
                         value.append(booksheet.cell_value(index_row, index_col))
                     self.excel_value.append(value)
                 self.logger.info('读取Excel文件内容成功!')
@@ -198,22 +198,39 @@ class ManageClass:
             # 定义背景高度像素
             # high = 1676
             # 定义粘贴后的二维码大小
-            ewmwidth = 580
-            ewmhigh = 580
+            # 老
+            # ewmwidth = 580
+            # ewmhigh = 580
+
+            # 新
+            ewmwidth = 685
+            ewmhigh = 670
             # 二维码粘贴高度定位为580，小牌下移0；大牌下移221
             # gd = 580
 
             # 定义字体大小
-            zt = 85
+            # 老
+            # zt = 85
+
+            # 新
+            zt = 55
 
             # 打开底版图片
-            im = Image.open('./template_colours.jpg')
+            im = Image.open('./template_colours_new.jpg')
             # 打开二维码图片
             imin = Image.open(self.dec_path + filename)
             # 缩放
             imin = imin.resize((ewmwidth, ewmhigh))
             # 粘贴图片
-            im.paste(imin, (310, 780))
+            # 老
+            # im.paste(imin, (310, 780))
+            # 新
+            im.paste(imin, (251, 495))
+
+            imdecorate = Image.open('./logo.png')
+            r, g, b, a = imdecorate.split()
+            png_info = imdecorate.info
+            im.paste(imdecorate, (515, 756), mask=a)
 
             name = ''
             save_file_name = ''
@@ -243,21 +260,38 @@ class ManageClass:
 
             # 限制输入16个字符
             # 限制每行字数为8，即8个字换行
-            hangzishu = 8
+            # 老
+            # hangzishu = 8
+            # if length <= hangzishu:  # 字符串很长的情况下
+            #     an = (width - length * zt) / 2  # 判断字符串到图片左侧的距离
+            #     draw.text((an, 1426), name, fill=(0, 0, 0), font=font)  # 文字写入
+            # elif (length > hangzishu) and (length <= hangzishu * 2):
+            #     an1 = (width - hangzishu * zt) / 2  # 第一行
+            #     an2 = (width - (length - hangzishu) * zt) / 2  # 第二行
+            #     a1, a2 = name[:hangzishu], name[hangzishu:]
+            #     draw.text((an1, 1434), a1, fill=(0, 0, 0), font=font)
+            #     draw.text((an2, 1540), a2, fill=(0, 0, 0), font=font)
+            # else:
+            #     # 人为控制字符长度
+            #     self.logger.info('{0}字符超限'.format(filename))
+
+            # 新
+            hangzishu = 10
             if length <= hangzishu:  # 字符串很长的情况下
                 an = (width - length * zt) / 2  # 判断字符串到图片左侧的距离
-                draw.text((an, 1426), name, fill=(0, 0, 0), font=font)  # 文字写入
+                draw.text((an, 1178), name, fill=(0, 0, 0), font=font)  # 文字写入
             elif (length > hangzishu) and (length <= hangzishu * 2):
                 an1 = (width - hangzishu * zt) / 2  # 第一行
                 an2 = (width - (length - hangzishu) * zt) / 2  # 第二行
                 a1, a2 = name[:hangzishu], name[hangzishu:]
-                draw.text((an1, 1434), a1, fill=(0, 0, 0), font=font)
-                draw.text((an2, 1540), a2, fill=(0, 0, 0), font=font)
+                draw.text((an1, 1178), a1, fill=(0, 0, 0), font=font)
+                draw.text((an2, 1242), a2, fill=(0, 0, 0), font=font)
             else:
                 # 人为控制字符长度
                 self.logger.info('{0}字符超限'.format(filename))
 
             im.save(os.path.join(self.target_path, save_file_name + "_彩色图") + ".jpg", 'JPEG')
+            # im.save(os.path.join(self.target_path, save_file_name + "_彩色图") + ".png")
             return [True, save_file_name + "_彩色图"]
         except Exception as e:
             self.logger.warning('二维码转换出现错误,文件名:{0}, {1}'.format(os.path.basename(filename), e))

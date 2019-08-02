@@ -26,6 +26,7 @@ class ThreadTransfer(QThread):
                 self.signOut.emit('Excel文件读取成功', 0)
             else:
                 self.signOut.emit('Excel文件读取失败，开启默认命名', 0)
+
             manage.coding_conversion()
 
             list_filename = manage.return_list_filename()
