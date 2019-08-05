@@ -125,14 +125,27 @@ class ManageClass:
             # 定义背景高度像素
             # high = 1676
             # 定义粘贴后的二维码大小
-            ewmwidth = 680
-            ewmhigh = 680
+
+            # 老
+            # ewmwidth = 680
+            # ewmhigh = 680
+            # 新
+            ewmwidth = 960
+            ewmhigh = 960
             # 二维码粘贴高度定位为580，小牌下移0；大牌下移221
-            gd = 580
+
+            # 老
+            # gd = 580
+            # tz = 221
+            # 新
+            gd = 405
             tz = 221
 
             # 定义字体大小
-            zt = 88
+            # 老
+            # zt = 88
+            # 新
+            zt = 80
 
             # 打开底版图片
             im = Image.open('./template.jpg')
@@ -141,7 +154,10 @@ class ManageClass:
             # 缩放
             imin = imin.resize((ewmwidth, ewmhigh))
             # 粘贴图片
-            im.paste(imin, (int((width - ewmwidth) / 2), gd + tz))
+            # 老
+            # im.paste(imin, (int((width - ewmwidth) / 2), gd + tz))
+            # 新
+            im.paste(imin, (int((width - ewmwidth) / 2), gd))
 
             name = ''
             save_file_name = ''
@@ -171,16 +187,26 @@ class ManageClass:
 
             # 限制输入16个字符
             # 限制每行字数为8，即8个字换行
-            hangzishu = 8
+            # 老
+            # hangzishu = 8
+            # 新
+            hangzishu = 10
             if length <= hangzishu:  # 字符串很长的情况下
                 an = (width - length * zt) / 2  # 判断字符串到图片左侧的距离
-                draw.text((an, 1285 + tz), name, fill=(0, 0, 0), font=font)  # 文字写入
+                # 老
+                # draw.text((an, 1285 + tz), name, fill=(0, 0, 0), font=font)  # 文字写入
+                # 新
+                draw.text((an, 1457), name, fill=(0, 0, 0), font=font)  # 文字写入
             elif (length > hangzishu) and (length <= hangzishu * 2):
                 an1 = (width - hangzishu * zt) / 2  # 第一行
                 an2 = (width - (length - hangzishu) * zt) / 2  # 第二行
                 a1, a2 = name[:hangzishu], name[hangzishu:]
-                draw.text((an1, 1252 + tz), a1, fill=(0, 0, 0), font=font)
-                draw.text((an2, 1349 + tz), a2, fill=(0, 0, 0), font=font)
+                # 老
+                # draw.text((an1, 1252 + tz), a1, fill=(0, 0, 0), font=font)
+                # draw.text((an2, 1349 + tz), a2, fill=(0, 0, 0), font=font)
+                # 新
+                draw.text((an1, 1410), a1, fill=(0, 0, 0), font=font)
+                draw.text((an2, 1507), a2, fill=(0, 0, 0), font=font)
             else:
                 # 人为控制字符长度
                 self.logger.info('{0}字符超限'.format(filename))
