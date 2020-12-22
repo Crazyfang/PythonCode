@@ -1,5 +1,6 @@
 import sys
 import Surface
+import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import QBasicTimer, QStringListModel, QTimer, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -65,6 +66,7 @@ class QRCodeTransfer(QMainWindow, Surface.Ui_MainWindow):
         # self.timer = QTimer()
         # self.timer.timeout.connect(self.set_progress_bar)
         # self.timer.start(100)
+        self.filepath = ''
         self.radioButton_colours.toggled.connect(self.change_type)
         self.radioButton_blank.toggled.connect(self.change_type)
         self.step = 0  # 进度条的值
@@ -76,12 +78,22 @@ class QRCodeTransfer(QMainWindow, Surface.Ui_MainWindow):
         self.Button_Start.clicked.connect(self.start_process)
 
     def select_zip_file(self):
-        filename_choose, filetype = QFileDialog.getOpenFileName(self, '打开', r'./', 'Zip Files (*.zip);;All Files (*)')
+        file_path = r'./'
+        if self.filepath:
+            file_path = self.filepath
+        filename_choose, filetype = QFileDialog.getOpenFileName(self, '打开', file_path, 'Zip Files (*.zip);;All Files (*)')
         self.lineEdit_SelectZipFile.setText(filename_choose)
+        if filename_choose:
+            self.filepath = os.path.abspath(os.path.dirname(filename_choose))
 
     def select_excel_file(self):
-        filename_choose, filetype = QFileDialog.getOpenFileName(self, '打开', r'./', 'Excel Files 2003 (*.xls);;Excel Files 2007 (*.xlsx);;ALL Files (*)')
+        file_path = r'./'
+        if self.filepath:
+            file_path = self.filepath
+        filename_choose, filetype = QFileDialog.getOpenFileName(self, '打开', file_path, 'Excel Files 2003 (*.xls);;Excel Files 2007 (*.xlsx);;ALL Files (*)')
         self.lineEdit_SelectExcelFile.setText(filename_choose)
+        if filename_choose:
+            self.filepath = os.path.abspath(os.path.dirname(filename_choose))
 
     def start_process(self):
         if not self.lineEdit_SelectZipFile.text() and not self.lineEdit_SelectExcelFile.text():

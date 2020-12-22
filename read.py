@@ -11,12 +11,12 @@ import tkinter.filedialog
 
 
 def zip_files(fpath, targetpath):
-    '''
+    """
     #将压缩包解压到指定目录下
     :param fpath:压缩文件
     :param targetpath:压缩目标路径
     :return
-    '''
+    """
     try:
         f = zipfile.ZipFile(fpath, "r")
         for file in f.namelist():
@@ -29,12 +29,12 @@ def zip_files(fpath, targetpath):
 
 
 def ergodic_files(zippath, targetpath):
-    '''
+    """
     遍历指定目录，显示目录下的所有文件名
     :param zippath:解压路径
     :param targetpath:新图片生成的路径
     :return :
-    '''
+    """
     filenames = os.listdir(zippath)
     for filename in filenames:
         composite_image(zippath, filename, targetpath)
@@ -42,13 +42,13 @@ def ergodic_files(zippath, targetpath):
 
 
 def composite_image(filepath, filename, targetpath):
-    '''
+    """
     对图片进行组合
     :param filepath: 读取图片的路径
     :param filename: 图片的名称
     :param targetpath: 新图片生成的路径
     :return None:
-    '''
+    """
 
     # 定义背景宽度像素
     width = 1183
@@ -142,25 +142,25 @@ def choose_zipfile():
     filename = tkinter.filedialog.askopenfilename()
 
     if filename != '':
-        lb2.config(text="您选择的文件是：" + filename);
+        lb2.config(text="您选择的文件是：" + filename)
         convert(filename)
     else:
-        lb2.config(text="您没有选择任何文件");
+        lb2.config(text="您没有选择任何文件")
 
 def an_garcode(dir_names):
 
     for temp_name in os.listdir(dir_names):
         try:
-            #使用cp437对文件名进行解码还原
+            # 使用cp437对文件名进行解码还原
             new_name = temp_name.encode('cp437')
-            #win下一般使用的是gbk编码
+            # win下一般使用的是gbk编码
             new_name = new_name.decode("gbk")
-            #对乱码的文件名及文件夹名进行重命名
+            # 对乱码的文件名及文件夹名进行重命名
             os.rename(os.path.join(dir_names, temp_name), os.path.join(dir_names, new_name))
-            #传回重新编码的文件名给原文件名
+            # 传回重新编码的文件名给原文件名
             temp_name = new_name
         except:
-            #如果已被正确识别为utf8编码时则不需再编码
+            # 如果已被正确识别为utf8编码时则不需再编码
             pass
 
 

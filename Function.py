@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 import shutil
 import os.path
 import zipfile
@@ -7,6 +9,7 @@ import xlrd
 from openpyxl import load_workbook
 import datetime
 from PIL import Image, ImageFont, ImageDraw
+import chardet
 
 
 # TODO Add the extra function
@@ -54,8 +57,11 @@ class ManageClass:
 
     def get_zip_file(self, dec_path='./tmp/'):
         try:
-            f = zipfile.ZipFile(self.zip_file_path, "r")
             self.dec_path = dec_path
+            if os.path.exists(self.dec_path):
+                shutil.rmtree(self.dec_path)
+            f = zipfile.ZipFile(self.zip_file_path, "r")
+
             if os.path.exists(dec_path):
                 pass
             else:
@@ -115,8 +121,20 @@ class ManageClass:
             return [False, e]
 
     def coding_conversion(self):
-        for filename in os.listdir(self.dec_path):
-            os.rename(os.path.join(self.dec_path, filename), os.path.join(self.dec_path, filename.encode('cp437').decode('gbk')))
+        for index, file_name in enumerate(os.listdir(self.dec_path)):
+            try:
+                os.rename(os.path.join(self.dec_path, file_name)
+                          , os.path.join(self.dec_path, file_name.encode('cp437').decode('gbk')))
+            except Exception as e:
+                print(e)
+            # if index == 0:
+            #     os.rename(os.path.join(self.dec_path, file_name)
+            #               , os.path.join(self.dec_path, '何友娣南街菜场_12_6230910299054016641_20201222193838.png'))
+            # else:
+            #     os.rename(os.path.join(self.dec_path, file_name)
+            #               , os.path.join(self.dec_path, '宁波市镇海区庄市月光族服装店_12_6230910299043021074_20201222193838.png'))
+            # os.rename(os.path.join(self.dec_path, file_name)
+            #           , os.path.join(self.dec_path, random.randint(0, 10000) + '.jpg'))
 
     def convert_image(self, filename):
         try:
